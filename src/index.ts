@@ -3,7 +3,8 @@ import { GraphQLServer } from "graphql-yoga";
 // TYPE DEFS
 const typeDefs = `
 type Query {
-    add(num1: Float!, num2: Float!):Float!
+   add(numbers: [Float!]):Float!
+   grades:[Int!]!
    greeting(name: String):String!
    me: User!
    post:Post!
@@ -25,8 +26,14 @@ type Post{
 // RESOLVERS
 const resolvers = {
   Query: {
-    add(parent: any, args: { num1: number; num2: number }) {
-      return args.num1 + args.num2;
+    add(parent: any, args: { numbers: number[] }) {
+      if (args.numbers.length === 0) {
+        return 0;
+      }
+      return args.numbers.reduce((acc, cur) => acc + cur);
+    },
+    grades() {
+      return [1, 2, 3, 4];
     },
     greeting(parent: any, args: { name?: string }, ctx: any, info: any) {
       if (args.name) {
