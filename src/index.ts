@@ -94,6 +94,7 @@ type Post{
     body:String!
     published:Boolean!
     author:User!
+    comments:[Comment!]!
 }
 
 type Comment{
@@ -154,6 +155,9 @@ const resolvers = {
   Post: {
     author(parent: typeof posts[0], args: any, ctx: any, info: any) {
       return users.find(usr => usr.id === parent.author);
+    },
+    comments(parent: typeof posts[0], args: any, ctx: any, info: any) {
+      return comments.filter(cmt => cmt.post === parent.id);
     }
   },
   User: {
