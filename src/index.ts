@@ -71,66 +71,6 @@ let comments = [
   }
 ];
 
-// TYPE DEFS
-const typeDefs = `
-type Query {
-   users(query:String):[User!]!
-   posts(query:String):[Post!]!
-   comments(query:String):[Comment!]!
-   me: User!
-   post:Post!
-}
-type Mutation{
-  createUser(data:createUserInput):User!
-  deleteUser(id:ID!):User!
-  createPost(data:createPostInput):Post!
-  deletePost(id:ID!):Post!
-  createComment(data:createCommentInput):Comment!
-  deleteComment(data:ID!):Comment!
-}
-
-input createUserInput{
-  name: String!, 
-  email: String!, 
-  age: Int!
-}
-input createPostInput{
-  title: String!, 
-  body: String!, 
-  published: Boolean!,
-  author:String!
-}
-input createCommentInput{
-  text: String!, 
-  author: String!,
-  post:String!
-}
-
-type User {
-    id:ID!
-    name: String!
-    email: String!
-    age: Int
-    posts:[Post!]!
-    comments:[Comment!]!
-}
-
-type Post{
-    id:ID!
-    title:String!
-    body:String!
-    published:Boolean!
-    author:User!
-    comments:[Comment!]!
-}
-
-type Comment{
-  id:ID!
-  text: String!
-  author: User!
-  post: Post!
-}
-`;
 // RESOLVERS
 const resolvers = {
   Query: {
@@ -303,7 +243,10 @@ const resolvers = {
   }
 };
 
-const server = new GraphQLServer({ typeDefs, resolvers });
+const server = new GraphQLServer({
+  typeDefs: "./src/schema.graphql",
+  resolvers
+});
 
 server.start((): void => {
   console.log("the server is up");
