@@ -68,4 +68,10 @@ let comments = [
   }
 ];
 
+export interface Context {
+  comments: typeof comments;
+  posts: typeof posts;
+  users: typeof users;
+}
+
 export { users, comments, posts };

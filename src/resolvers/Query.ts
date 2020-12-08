@@ -1,16 +1,7 @@
-import { comments, posts, users } from "../db";
+import { comments, Context, posts, users } from "../db";
 
 const Query = {
-  users(
-    parent: any,
-    args: { query?: string },
-    ctx: {
-      comments: typeof comments;
-      posts: typeof posts;
-      users: typeof users;
-    },
-    info: any
-  ) {
+  users(parent: any, args: { query?: string }, ctx: Context, info: any) {
     if (!args.query) {
       return users;
     }
@@ -18,16 +9,7 @@ const Query = {
       usr.name.toLowerCase().includes(args.query!.toLowerCase())
     );
   },
-  posts(
-    parent: any,
-    args: { query?: string },
-    ctx: {
-      comments: typeof comments;
-      posts: typeof posts;
-      users: typeof users;
-    },
-    info: any
-  ) {
+  posts(parent: any, args: { query?: string }, ctx: Context, info: any) {
     if (!args.query) {
       return posts;
     }
@@ -37,16 +19,7 @@ const Query = {
         pst.body.toLowerCase().includes(args.query!.toLowerCase())
     );
   },
-  comments(
-    parent: any,
-    args: { query?: string },
-    ctx: {
-      comments: typeof comments;
-      posts: typeof posts;
-      users: typeof users;
-    },
-    info: any
-  ) {
+  comments(parent: any, args: { query?: string }, ctx: Context, info: any) {
     if (!args.query) {
       return comments;
     }

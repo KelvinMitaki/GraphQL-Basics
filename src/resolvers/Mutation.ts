@@ -1,15 +1,12 @@
 import { comments, posts, users } from "../db";
 import { v1 } from "uuid";
+import { Context } from "../db";
 
 const Mutation = {
   createUser(
     parent: any,
     args: { data: { name: string; email: string; age: number } },
-    ctx: {
-      comments: typeof comments;
-      posts: typeof posts;
-      users: typeof users;
-    },
+    ctx: Context,
     info: any
   ) {
     const emailExists = ctx.users.some(
@@ -27,6 +24,7 @@ const Mutation = {
     ctx.users.push(user);
     return user;
   },
+  updateUser(parent: any, args: {}) {},
   createPost(
     parent: any,
     args: {
@@ -37,11 +35,7 @@ const Mutation = {
         author: string;
       };
     },
-    ctx: {
-      comments: typeof comments;
-      posts: typeof posts;
-      users: typeof users;
-    },
+    ctx: Context,
     info: any
   ) {
     const authorExists = ctx.users.some(
@@ -57,11 +51,7 @@ const Mutation = {
   createComment(
     parent: any,
     args: { data: { text: string; author: string; post: string } },
-    ctx: {
-      comments: typeof comments;
-      posts: typeof posts;
-      users: typeof users;
-    },
+    ctx: Context,
     info: any
   ) {
     const postExists = ctx.posts.some(
@@ -78,16 +68,7 @@ const Mutation = {
     ctx.comments.push(comment);
     return comment;
   },
-  deleteUser(
-    parent: any,
-    args: { id: string },
-    ctx: {
-      comments: typeof comments;
-      posts: typeof posts;
-      users: typeof users;
-    },
-    info: any
-  ) {
+  deleteUser(parent: any, args: { id: string }, ctx: Context, info: any) {
     const userIndx = ctx.users.findIndex(usr => usr.id === args.id);
     if (userIndx === -1) {
       throw new Error("No user with that id");
@@ -102,16 +83,7 @@ const Mutation = {
     ctx.comments = ctx.comments.filter(cmt => cmt.author !== args.id);
     return deletedUser[0];
   },
-  deletePost(
-    parent: any,
-    args: { id: string },
-    ctx: {
-      comments: typeof comments;
-      posts: typeof posts;
-      users: typeof users;
-    },
-    info: any
-  ) {
+  deletePost(parent: any, args: { id: string }, ctx: Context, info: any) {
     const postIndx = ctx.posts.findIndex(pst => pst.id === args.id);
     if (postIndx === -1) {
       throw new Error("No post with that ID");
@@ -120,16 +92,7 @@ const Mutation = {
     ctx.comments = ctx.comments.filter(cmt => cmt.post !== args.id);
     return deletedPost[0];
   },
-  deleteComment(
-    parent: any,
-    args: { id: string },
-    ctx: {
-      comments: typeof comments;
-      posts: typeof posts;
-      users: typeof users;
-    },
-    info: any
-  ) {
+  deleteComment(parent: any, args: { id: string }, ctx: Context, info: any) {
     const commentIndx = ctx.comments.findIndex(cmt => cmt.id === args.id);
     if (commentIndx === -1) {
       throw new Error("No comment with that id");
