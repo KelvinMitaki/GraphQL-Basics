@@ -10,6 +10,7 @@ type Mutation {
   updateUser(id: ID!, data: updateUserInput!): User!
   deleteUser(id: ID!): User!
   createPost(data: createPostInput!): Post!
+  updatePost(id: ID!, data: updatePostInput!): Post!
   deletePost(id: ID!): Post!
   createComment(data: createCommentInput!): Comment!
   deleteComment(id: ID!): Comment!
@@ -30,6 +31,11 @@ input createPostInput {
   body: String!
   published: Boolean!
   author: String!
+}
+input updatePostInput {
+  title: String
+  body: String
+  published: Boolean
 }
 input createCommentInput {
   text: String!

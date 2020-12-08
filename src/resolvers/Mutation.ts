@@ -50,6 +50,22 @@ const Mutation = {
     }
     return ctx.users[userIndx];
   },
+  updatePost(
+    parent: any,
+    args: {
+      id: string;
+      data: { title?: string; body?: string; published?: boolean };
+    },
+    ctx: Context,
+    info: any
+  ) {
+    const postIndx = ctx.posts.findIndex(pst => pst.id === args.id);
+    if (postIndx === -1) {
+      throw new Error("No post with that id");
+    }
+    ctx.posts[postIndx] = { ...ctx.posts[postIndx], ...args.data };
+    return ctx.posts[postIndx];
+  },
   createPost(
     parent: any,
     args: {
