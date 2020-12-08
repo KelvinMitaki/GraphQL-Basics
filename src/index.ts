@@ -46,19 +46,23 @@ const posts = [
 const comments = [
   {
     id: "jkhkj13",
-    text: "this is the First comment"
+    text: "this is the First comment",
+    author: "1298"
   },
   {
     id: "jkj13",
-    text: "this is the Second comment"
+    text: "this is the Second comment",
+    author: "1298"
   },
   {
     id: "123",
-    text: "this is the third comment"
+    text: "this is the third comment",
+    author: "128"
   },
   {
     id: "13",
-    text: "this is the last comment"
+    text: "this is the last comment",
+    author: "123098"
   }
 ];
 
@@ -90,6 +94,7 @@ type Post{
 type Comment{
   id:ID!
   text: String!
+  author: User!
 }
 `;
 // RESOLVERS
@@ -117,8 +122,10 @@ const resolvers = {
       if (!args.query) {
         return comments;
       }
-      return comments.filter(cmt =>
-        cmt.text.toLowerCase().includes(args.query!.toLowerCase())
+      return comments.filter(
+        cmt =>
+          cmt.text.toLowerCase().includes(args.query!.toLowerCase()) ||
+          cmt.author.toLowerCase().includes(args.query!.toLowerCase())
       );
     },
     me() {
@@ -146,6 +153,11 @@ const resolvers = {
   User: {
     posts(parent: typeof users[0], args: any, ctx: any, info: any) {
       return posts.filter(pst => pst.author === parent.id);
+    }
+  },
+  Comment: {
+    author(parent: typeof comments[0], args: any, ctx: any, info: any) {
+      return users.find(usr => usr.id === parent.author);
     }
   }
 };
