@@ -87,7 +87,12 @@ const Mutation = {
     const post: typeof posts[0] = { id: v1(), ...args.data };
     ctx.posts.push(post);
     if (post.published) {
-      ctx.pubsub.publish("post", { post });
+      ctx.pubsub.publish("post", {
+        post: {
+          mutation: "CREATED",
+          data: post
+        }
+      });
     }
     return post;
   },
