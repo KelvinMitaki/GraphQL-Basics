@@ -24,7 +24,19 @@ const Mutation = {
     ctx.users.push(user);
     return user;
   },
-  updateUser(parent: any, args: {}) {},
+  updateUser(
+    parent: any,
+    args: { id: string; name?: string; email?: string; age?: number },
+    ctx: Context,
+    info: any
+  ) {
+    const user = ctx.users.findIndex(usr => usr.id === args.id);
+    if (user === -1) {
+      throw new Error("No user with that ID");
+    }
+    ctx.users[user] = { ...ctx.users[user], ...args };
+    return ctx.users[user];
+  },
   createPost(
     parent: any,
     args: {
