@@ -9,6 +9,11 @@ const Subscription = {
       }
       return ctx.pubsub.asyncIterator(`comment ${post.id}`);
     }
+  },
+  post: {
+    subscribe(parent: any, args: any, ctx: Context, info: any) {
+      return ctx.pubsub.asyncIterator(`post`);
+    }
   }
 };
 
