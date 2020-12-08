@@ -43,12 +43,31 @@ const posts = [
     author: "123098"
   }
 ];
+const comments = [
+  {
+    id: "jkhkj13",
+    text: "this is the First comment"
+  },
+  {
+    id: "jkj13",
+    text: "this is the Second comment"
+  },
+  {
+    id: "123",
+    text: "this is the third comment"
+  },
+  {
+    id: "13",
+    text: "this is the last comment"
+  }
+];
 
 // TYPE DEFS
 const typeDefs = `
 type Query {
    users(query:String):[User!]!
    posts(query:String):[Post!]!
+   comments(query:String):[Comment!]!
    me: User!
    post:Post!
 }
@@ -67,6 +86,11 @@ type Post{
     published:Boolean!
     author:User!
 }
+
+type Comment{
+  id:ID!
+  text: String!
+}
 `;
 // RESOLVERS
 const resolvers = {
@@ -83,8 +107,18 @@ const resolvers = {
       if (!args.query) {
         return posts;
       }
-      return posts.filter(pst =>
-        pst.title.toLowerCase().includes(args.query!.toLowerCase())
+      return posts.filter(
+        pst =>
+          pst.title.toLowerCase().includes(args.query!.toLowerCase()) ||
+          pst.body.toLowerCase().includes(args.query!.toLowerCase())
+      );
+    },
+    comments(parent: any, args: { query?: string }, ctx: any, info: any) {
+      if (!args.query) {
+        return comments;
+      }
+      return comments.filter(cmt =>
+        cmt.text.toLowerCase().includes(args.query!.toLowerCase())
       );
     },
     me() {
