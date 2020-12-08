@@ -25,19 +25,22 @@ const posts = [
     id: "jkhkj132",
     title: "First blog",
     body: "This is the first blog",
-    published: true
+    published: true,
+    author: "123098"
   },
   {
     id: "jkj132",
     title: "Second blog",
     body: "This is the second blog",
-    published: false
+    published: false,
+    author: "1298"
   },
   {
     id: "132",
     title: "last blog",
     body: "This is the last blog",
-    published: true
+    published: true,
+    author: "123098"
   }
 ];
 
@@ -61,6 +64,7 @@ type Post{
     title:String!
     body:String!
     published:Boolean!
+    author:User!
 }
 `;
 // RESOLVERS
@@ -97,6 +101,11 @@ const resolvers = {
         body: "This is the first blog",
         published: true
       };
+    }
+  },
+  Post: {
+    author(parent: typeof posts[0], args: any, ctx: any, info: any) {
+      return users.find(usr => usr.id === parent.author);
     }
   }
 };
