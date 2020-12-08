@@ -1,4 +1,5 @@
 import { GraphQLServer } from "graphql-yoga";
+import { v1 } from "uuid";
 
 const users = [
   {
@@ -79,6 +80,9 @@ type Query {
    me: User!
    post:Post!
 }
+type Mutation{
+  createUser(name: String!, email: String!, age: Int!):User!
+}
 type User {
     id:ID!
     name: String!
@@ -150,6 +154,27 @@ const resolvers = {
         body: "This is the first blog",
         published: true
       };
+    }
+  },
+  Mutation: {
+    createUser(
+      parent: any,
+      args: { name: string; email: string; age: number },
+      ctx: any,
+      info: any
+    ) {
+      const emailExists = users.some(usr => usr.email === args.email);
+      if (emailExists) {
+        throw new Error("Email exists");
+      }
+      const user: typeof users[0] = {
+        id: v1(),
+        name: args.name,
+        email: args.email,
+        age: args.age
+      };
+      users.push(user);
+      return user;
     }
   },
   Post: {

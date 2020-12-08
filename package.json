@@ -11,6 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "graphql-yoga": "^1.18.3"
+    "@types/uuid": "^8.3.0",
+    "graphql-yoga": "^1.18.3",
+    "uuid": "^8.3.1"
   }
 }
