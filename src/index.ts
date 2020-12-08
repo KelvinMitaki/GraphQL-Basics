@@ -86,6 +86,7 @@ type Mutation{
   createPost(data:createPostInput):Post!
   deletePost(id:ID!):Post!
   createComment(data:createCommentInput):Comment!
+  deleteComment(data:ID!):Comment!
 }
 
 input createUserInput{
@@ -266,6 +267,14 @@ const resolvers = {
       const deletedPost = posts.splice(postIndx, 1);
       comments = comments.filter(cmt => cmt.post !== args.id);
       return deletedPost[0];
+    },
+    deleteComment(parent: any, args: { id: string }, ctx: any, info: any) {
+      const commentIndx = comments.findIndex(cmt => cmt.id === args.id);
+      if (commentIndx === -1) {
+        throw new Error("No comment with that id");
+      }
+      const deletedComment = comments.splice(commentIndx, 1);
+      return deletedComment[0];
     }
   },
   Post: {
