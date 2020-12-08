@@ -1,7 +1,7 @@
 import { GraphQLServer } from "graphql-yoga";
 import { v1 } from "uuid";
 
-const users = [
+let users = [
   {
     id: "123098",
     name: "kevin",
@@ -21,7 +21,7 @@ const users = [
     age: 22
   }
 ];
-const posts = [
+let posts = [
   {
     id: "jkhkj132",
     title: "First blog",
@@ -44,7 +44,7 @@ const posts = [
     author: "123098"
   }
 ];
-const comments = [
+let comments = [
   {
     id: "jkhkj13",
     text: "this is the First comment",
@@ -82,6 +82,7 @@ type Query {
 }
 type Mutation{
   createUser(data:createUserInput):User!
+  deleteUser(id:ID!):User!
   createPost(data:createPostInput):Post!
   createComment(data:createCommentInput):Comment!
 }
@@ -240,6 +241,21 @@ const resolvers = {
       };
       comments.push(comment);
       return comment;
+    },
+    deleteUser(parent: any, args: { id: string }, ctx: any, info: any) {
+      const userIndx = users.findIndex(usr => usr.id === args.id);
+      if (userIndx === -1) {
+        throw new Error("No user with that id");
+      }
+      const deletedUser = users.splice(userIndx, 1);
+      posts = posts.filter(pst => {
+        if (pst.author === args.id) {
+          comments = comments.filter(cmt => cmt.author !== args.id);
+        }
+        return pst.author !== args.id;
+      });
+      comments = comments.filter(cmt => cmt.author !== args.id);
+      return deletedUser[0];
     }
   },
   Post: {
