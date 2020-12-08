@@ -55,7 +55,7 @@ const Mutation = {
     if (userIndx === -1) {
       throw new Error("No user with that id");
     }
-    const deletedUser = ctx.users.splice(userIndx, 1);
+    const [deletedUser] = ctx.users.splice(userIndx, 1);
     ctx.posts = ctx.posts.filter(pst => {
       if (pst.author === args.id) {
         ctx.comments = ctx.comments.filter(cmt => cmt.author !== args.id);
@@ -63,7 +63,7 @@ const Mutation = {
       return pst.author !== args.id;
     });
     ctx.comments = ctx.comments.filter(cmt => cmt.author !== args.id);
-    return deletedUser[0];
+    return deletedUser;
   },
   createPost(
     parent: any,
@@ -117,9 +117,15 @@ const Mutation = {
     if (postIndx === -1) {
       throw new Error("No post with that ID");
     }
-    const deletedPost = ctx.posts.splice(postIndx, 1);
+    const [deletedPost] = ctx.posts.splice(postIndx, 1);
     ctx.comments = ctx.comments.filter(cmt => cmt.post !== args.id);
-    return deletedPost[0];
+    ctx.pubsub.publish("post", {
+      post: {
+        mutation: "DELETED",
+        data: deletedPost
+      }
+    });
+    return deletedPost;
   },
   createComment(
     parent: any,
@@ -161,8 +167,8 @@ const Mutation = {
     if (commentIndx === -1) {
       throw new Error("No comment with that id");
     }
-    const deletedComment = ctx.comments.splice(commentIndx, 1);
-    return deletedComment[0];
+    const [deletedComment] = ctx.comments.splice(commentIndx, 1);
+    return deletedComment;
   }
 };
 
