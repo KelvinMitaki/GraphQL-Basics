@@ -7,7 +7,7 @@ const Subscription = {
       if (!post) {
         throw new Error("No post with that id");
       }
-      ctx.pubsub.asyncIterator(`comment ${post.id}`);
+      return ctx.pubsub.asyncIterator(`comment ${post.id}`);
     }
   }
 };
