@@ -82,6 +82,7 @@ type Query {
 }
 type Mutation{
   createUser(name: String!, email: String!, age: Int!):User!
+  createPost(title: String!, body: String!, published: Boolean!,author:String!):Post!
 }
 type User {
     id:ID!
@@ -163,7 +164,9 @@ const resolvers = {
       ctx: any,
       info: any
     ) {
-      const emailExists = users.some(usr => usr.email === args.email);
+      const emailExists = users.some(
+        usr => usr.email.toLowerCase() === args.email.toLowerCase()
+      );
       if (emailExists) {
         throw new Error("Email exists");
       }
@@ -175,6 +178,22 @@ const resolvers = {
       };
       users.push(user);
       return user;
+    },
+    createPost(
+      parent: any,
+      args: { title: string; body: string; published: boolean; author: string },
+      ctx: any,
+      info: any
+    ) {
+      const authorExists = users.some(
+        usr => usr.id.toLowerCase() === args.author.toLowerCase()
+      );
+      if (!authorExists) {
+        throw new Error("No author with that ID");
+      }
+      const post: typeof posts[0] = { id: v1(), ...args };
+      posts.push(post);
+      return post;
     }
   },
   Post: {
