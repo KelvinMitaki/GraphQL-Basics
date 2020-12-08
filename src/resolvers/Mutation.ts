@@ -50,21 +50,20 @@ const Mutation = {
     }
     return ctx.users[userIndx];
   },
-  updatePost(
-    parent: any,
-    args: {
-      id: string;
-      data: { title?: string; body?: string; published?: boolean };
-    },
-    ctx: Context,
-    info: any
-  ) {
-    const postIndx = ctx.posts.findIndex(pst => pst.id === args.id);
-    if (postIndx === -1) {
-      throw new Error("No post with that id");
+  deleteUser(parent: any, args: { id: string }, ctx: Context, info: any) {
+    const userIndx = ctx.users.findIndex(usr => usr.id === args.id);
+    if (userIndx === -1) {
+      throw new Error("No user with that id");
     }
-    ctx.posts[postIndx] = { ...ctx.posts[postIndx], ...args.data };
-    return ctx.posts[postIndx];
+    const deletedUser = ctx.users.splice(userIndx, 1);
+    ctx.posts = ctx.posts.filter(pst => {
+      if (pst.author === args.id) {
+        ctx.comments = ctx.comments.filter(cmt => cmt.author !== args.id);
+      }
+      return pst.author !== args.id;
+    });
+    ctx.comments = ctx.comments.filter(cmt => cmt.author !== args.id);
+    return deletedUser[0];
   },
   createPost(
     parent: any,
@@ -89,6 +88,31 @@ const Mutation = {
     ctx.posts.push(post);
     return post;
   },
+  updatePost(
+    parent: any,
+    args: {
+      id: string;
+      data: { title?: string; body?: string; published?: boolean };
+    },
+    ctx: Context,
+    info: any
+  ) {
+    const postIndx = ctx.posts.findIndex(pst => pst.id === args.id);
+    if (postIndx === -1) {
+      throw new Error("No post with that id");
+    }
+    ctx.posts[postIndx] = { ...ctx.posts[postIndx], ...args.data };
+    return ctx.posts[postIndx];
+  },
+  deletePost(parent: any, args: { id: string }, ctx: Context, info: any) {
+    const postIndx = ctx.posts.findIndex(pst => pst.id === args.id);
+    if (postIndx === -1) {
+      throw new Error("No post with that ID");
+    }
+    const deletedPost = ctx.posts.splice(postIndx, 1);
+    ctx.comments = ctx.comments.filter(cmt => cmt.post !== args.id);
+    return deletedPost[0];
+  },
   createComment(
     parent: any,
     args: { data: { text: string; author: string; post: string } },
@@ -109,29 +133,19 @@ const Mutation = {
     ctx.comments.push(comment);
     return comment;
   },
-  deleteUser(parent: any, args: { id: string }, ctx: Context, info: any) {
-    const userIndx = ctx.users.findIndex(usr => usr.id === args.id);
-    if (userIndx === -1) {
-      throw new Error("No user with that id");
+  updateComment(
+    parent: any,
+    args: { id: string; data: { text: string } },
+    ctx: Context,
+    info: any
+  ) {
+    const cmtIndx = ctx.comments.findIndex(cmt => cmt.id === args.id);
+    if (cmtIndx === -1) {
+      throw new Error("Comment not found");
     }
-    const deletedUser = ctx.users.splice(userIndx, 1);
-    ctx.posts = ctx.posts.filter(pst => {
-      if (pst.author === args.id) {
-        ctx.comments = ctx.comments.filter(cmt => cmt.author !== args.id);
-      }
-      return pst.author !== args.id;
-    });
-    ctx.comments = ctx.comments.filter(cmt => cmt.author !== args.id);
-    return deletedUser[0];
-  },
-  deletePost(parent: any, args: { id: string }, ctx: Context, info: any) {
-    const postIndx = ctx.posts.findIndex(pst => pst.id === args.id);
-    if (postIndx === -1) {
-      throw new Error("No post with that ID");
-    }
-    const deletedPost = ctx.posts.splice(postIndx, 1);
-    ctx.comments = ctx.comments.filter(cmt => cmt.post !== args.id);
-    return deletedPost[0];
+    ctx.comments[cmtIndx].text = args.data.text;
+
+    return ctx.comments[cmtIndx];
   },
   deleteComment(parent: any, args: { id: string }, ctx: Context, info: any) {
     const commentIndx = ctx.comments.findIndex(cmt => cmt.id === args.id);
