@@ -1,3 +1,5 @@
+import { PubSub } from "graphql-yoga";
+
 let users = [
   {
     id: "123098",
@@ -72,6 +74,7 @@ export interface Context {
   comments: typeof comments;
   posts: typeof posts;
   users: typeof users;
+  pubsub: PubSub;
 }
 
 export { users, comments, posts };

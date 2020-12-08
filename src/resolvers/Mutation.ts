@@ -131,6 +131,7 @@ const Mutation = {
       ...args.data
     };
     ctx.comments.push(comment);
+    ctx.pubsub.publish(`comment ${args.data.post}`, { comment });
     return comment;
   },
   updateComment(
