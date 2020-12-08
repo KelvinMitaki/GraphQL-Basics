@@ -83,6 +83,7 @@ type Query {
 type Mutation{
   createUser(name: String!, email: String!, age: Int!):User!
   createPost(title: String!, body: String!, published: Boolean!,author:String!):Post!
+  createComment(text: String!, author: String!,post:String!):Comment!
 }
 type User {
     id:ID!
@@ -194,6 +195,26 @@ const resolvers = {
       const post: typeof posts[0] = { id: v1(), ...args };
       posts.push(post);
       return post;
+    },
+    createComment(
+      parent: any,
+      args: { text: string; author: string; post: string },
+      ctx: any,
+      info: any
+    ) {
+      const postExists = posts.some(
+        pst => pst.id === args.post && pst.published
+      );
+      const authorExists = users.some(usr => usr.id === args.author);
+      if (!postExists || !authorExists) {
+        throw new Error("post or author doesnot exist");
+      }
+      const comment: typeof comments[0] = {
+        id: v1(),
+        ...args
+      };
+      comments.push(comment);
+      return comment;
     }
   },
   Post: {
