@@ -84,6 +84,7 @@ type Mutation{
   createUser(data:createUserInput):User!
   deleteUser(id:ID!):User!
   createPost(data:createPostInput):Post!
+  deletePost(id:ID!):Post!
   createComment(data:createCommentInput):Comment!
 }
 
@@ -256,6 +257,15 @@ const resolvers = {
       });
       comments = comments.filter(cmt => cmt.author !== args.id);
       return deletedUser[0];
+    },
+    deletePost(parent: any, args: { id: string }, ctx: any, info: any) {
+      const postIndx = posts.findIndex(pst => pst.id === args.id);
+      if (postIndx === -1) {
+        throw new Error("No post with that ID");
+      }
+      const deletedPost = posts.splice(postIndx, 1);
+      comments = comments.filter(cmt => cmt.post !== args.id);
+      return deletedPost[0];
     }
   },
   Post: {
