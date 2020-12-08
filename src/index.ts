@@ -81,10 +81,28 @@ type Query {
    post:Post!
 }
 type Mutation{
-  createUser(name: String!, email: String!, age: Int!):User!
-  createPost(title: String!, body: String!, published: Boolean!,author:String!):Post!
-  createComment(text: String!, author: String!,post:String!):Comment!
+  createUser(data:createUserInput):User!
+  createPost(data:createPostInput):Post!
+  createComment(data:createCommentInput):Comment!
 }
+
+input createUserInput{
+  name: String!, 
+  email: String!, 
+  age: Int!
+}
+input createPostInput{
+  title: String!, 
+  body: String!, 
+  published: Boolean!,
+  author:String!
+}
+input createCommentInput{
+  text: String!, 
+  author: String!,
+  post:String!
+}
+
 type User {
     id:ID!
     name: String!
@@ -161,57 +179,64 @@ const resolvers = {
   Mutation: {
     createUser(
       parent: any,
-      args: { name: string; email: string; age: number },
+      args: { data: { name: string; email: string; age: number } },
       ctx: any,
       info: any
     ) {
       const emailExists = users.some(
-        usr => usr.email.toLowerCase() === args.email.toLowerCase()
+        usr => usr.email.toLowerCase() === args.data.email.toLowerCase()
       );
       if (emailExists) {
         throw new Error("Email exists");
       }
       const user: typeof users[0] = {
         id: v1(),
-        name: args.name,
-        email: args.email,
-        age: args.age
+        name: args.data.name,
+        email: args.data.email,
+        age: args.data.age
       };
       users.push(user);
       return user;
     },
     createPost(
       parent: any,
-      args: { title: string; body: string; published: boolean; author: string },
+      args: {
+        data: {
+          title: string;
+          body: string;
+          published: boolean;
+          author: string;
+        };
+      },
       ctx: any,
       info: any
     ) {
       const authorExists = users.some(
-        usr => usr.id.toLowerCase() === args.author.toLowerCase()
+        usr => usr.id.toLowerCase() === args.data.author.toLowerCase()
       );
       if (!authorExists) {
         throw new Error("No author with that ID");
       }
-      const post: typeof posts[0] = { id: v1(), ...args };
+      const post: typeof posts[0] = { id: v1(), ...args.data };
       posts.push(post);
       return post;
     },
     createComment(
       parent: any,
-      args: { text: string; author: string; post: string },
+      args: { data: { text: string; author: string; post: string } },
       ctx: any,
       info: any
     ) {
       const postExists = posts.some(
-        pst => pst.id === args.post && pst.published
+        pst => pst.id === args.data.post && pst.published
       );
-      const authorExists = users.some(usr => usr.id === args.author);
+      const authorExists = users.some(usr => usr.id === args.data.author);
       if (!postExists || !authorExists) {
         throw new Error("post or author doesnot exist");
       }
       const comment: typeof comments[0] = {
         id: v1(),
-        ...args
+        ...args.data
       };
       comments.push(comment);
       return comment;
