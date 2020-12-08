@@ -193,7 +193,7 @@ const Mutation = {
     ctx.pubsub.publish(`comment ${ctx.comments[cmtIndx].post}`, {
       comment: {
         mutation: "UPDATED",
-        data: ctx.comments[cmtIndx].text
+        data: ctx.comments[cmtIndx]
       }
     });
     return ctx.comments[cmtIndx];
