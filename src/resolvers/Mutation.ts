@@ -171,7 +171,12 @@ const Mutation = {
       ...args.data
     };
     ctx.comments.push(comment);
-    ctx.pubsub.publish(`comment ${args.data.post}`, { comment });
+    ctx.pubsub.publish(`comment ${args.data.post}`, {
+      comment: {
+        mutation: "CREATED",
+        data: comment
+      }
+    });
     return comment;
   },
   updateComment(
@@ -185,7 +190,12 @@ const Mutation = {
       throw new Error("Comment not found");
     }
     ctx.comments[cmtIndx].text = args.data.text;
-
+    ctx.pubsub.publish(`comment ${ctx.comments[cmtIndx].post}`, {
+      comment: {
+        mutation: "UPDATED",
+        data: ctx.comments[cmtIndx].text
+      }
+    });
     return ctx.comments[cmtIndx];
   },
   deleteComment(parent: any, args: { id: string }, ctx: Context, info: any) {
@@ -194,6 +204,12 @@ const Mutation = {
       throw new Error("No comment with that id");
     }
     const [deletedComment] = ctx.comments.splice(commentIndx, 1);
+    ctx.pubsub.publish(`comment ${deletedComment.post}`, {
+      comment: {
+        mutation: "DELETED",
+        data: deletedComment
+      }
+    });
     return deletedComment;
   }
 };
